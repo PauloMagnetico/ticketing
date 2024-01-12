@@ -16,9 +16,10 @@ app.use(json());
 app.use(
     cookieSession({
         signed: false,
-        secure: true
+        //true in dev/prod but false in test, so we can read the cookie over http
+        secure: process.env.NODE_ENV !== 'test'
     })
-)
+);
 
 app.use(currentUserRouter);
 app.use(signInRouter);

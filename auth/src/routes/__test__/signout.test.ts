@@ -1,6 +1,5 @@
 import request from "supertest";
 import { app } from "../../app";
-import { createModuleResolutionCache } from "typescript";
 
 it('clears cookie after signing out', async () => {
     await request(app)

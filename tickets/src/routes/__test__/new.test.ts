@@ -66,5 +66,14 @@ it('returns error when invalid price', async () => {
 });
 
 it('creates a ticket when the input is valid', async () => {
+    //add in a check to make in ticket was saved in DB
 
+    await request(app)
+    .post('/api/tickets')
+    .set('Cookie', global.signin())
+    .send({
+        title: "validtitle",
+        price: 10
+    })
+    .expect(201);
 });

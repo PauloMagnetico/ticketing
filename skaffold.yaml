@@ -26,3 +26,11 @@ build:
             dest: .
           - src: '**/*.jsx'
             dest: .
+        - image: paulomagnetico/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/%%/*.ts'
+            dest: .

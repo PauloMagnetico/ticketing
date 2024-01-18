@@ -1,10 +1,9 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import { app } from '../app';
-import request from 'supertest';
+import jwt from 'jsonwebtoken';
 
 declare global {
-    var signin: () => Promise<string[]>;
+    var signin: () => string[];
 }
 
 let mongo: any;
@@ -33,20 +32,30 @@ afterAll(async () => {
 });
 
 
-// helper function to create a user in test scenarios, and return the cookie so we can use
-// it for follow up requests, this can also be extracted in seperate file and imported in every test file
-global.signin = async () => {
-    const email = 'test@test.com';
-    const password = 'password';
+// we cannot use a signin like in the auth service, because we don't have a signin route
+// testing should only contain the current service , and thus not make a call to auth
+global.signin = () => {
 
-    const response = await request(app)
-        .post('/api/users/signup')
-        .send({ 
-            email, 
-            password 
-        })
-        .expect(201);
+    // build a JWT payload { id, email }
+    const payload = {
+        id: '234230948',
+        email: 'test@test.com'
+    };
 
-    const cookie = response.get('Set-Cookie');
-    return cookie;
+    // create the JWT token
+    const token = jwt.sign(payload, process.env.JWT_KEY!);
+
+    // Build session object { jwt: MY)JWT}
+    const session = {jwt: token};
+
+    // Turn session into JSON
+    const sessionJSON = JSON.stringify(session);
+
+    // take JSON and encode it as base64
+    const base64 = Buffer.from(sessionJSON).toString('base64');
+
+    //return a string that is cookie with the encoded data
+    return [`express:sess=${base64}`];
+
+
 };

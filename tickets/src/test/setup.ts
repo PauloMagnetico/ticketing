@@ -46,7 +46,7 @@ global.signin = () => {
     const token = jwt.sign(payload, process.env.JWT_KEY!);
 
     // Build session object { jwt: MY)JWT}
-    const session = {jwt: token};
+    const session = { jwt: token };
 
     // Turn session into JSON
     const sessionJSON = JSON.stringify(session);
@@ -55,7 +55,7 @@ global.signin = () => {
     const base64 = Buffer.from(sessionJSON).toString('base64');
 
     //return a string that is cookie with the encoded data
-    return [`express:sess=${base64}`];
+    return [`session=${base64}`];
 
 
 };

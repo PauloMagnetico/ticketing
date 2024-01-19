@@ -2,7 +2,8 @@ import express from 'express';
 import 'express-async-errors';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
-import { createTicketRouter } from './routes/__test__/new';
+import { createTicketRouter } from './routes/new';
+import { showTicketRouter } from './routes/show';
 
 import { errorHandler, NotFoundError, currentUser } from '@paulotickets/common';
 
@@ -20,6 +21,7 @@ app.use(
 //currentUser needs to be set up after cookiesession
 app.use(currentUser)
 app.use(createTicketRouter);
+app.use(showTicketRouter);
 
 app.all('*', async (req, res) => {
     throw new NotFoundError();

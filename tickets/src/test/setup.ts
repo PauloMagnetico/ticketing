@@ -37,8 +37,9 @@ afterAll(async () => {
 global.signin = () => {
 
     // build a JWT payload { id, email }
+    // we create a random id to simulate different logins every time
     const payload = {
-        id: '234230948',
+        id: new mongoose.Types.ObjectId().toHexString(),
         email: 'test@test.com'
     };
 

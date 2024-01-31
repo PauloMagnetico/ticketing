@@ -1,5 +1,6 @@
-import nats, { Message } from 'node-nats-streaming';
+import nats from 'node-nats-streaming';
 import { randomBytes } from 'crypto';
+import { TicketCreatedListener } from './events/ticket-created-listener';
 
 console.clear();
 
@@ -19,31 +20,40 @@ stan.on('connect', () => {
         process.exit();
     });
 
-    // setManualAckMode: true -> we need to manually acknowledge the message
-    // default behaviour: if the listener crashes, the message will be lost
-    const options = stan
-        .subscriptionOptions()  
-        .setManualAckMode(true) // we need to manually acknowledge the message
-        .setDeliverAllAvailable() // deliver all the events that were created in the past
-        .setDurableName('orders-service');  // durable subscription: if the listener crashes, the message will be saved and delivered when the listener is back online
+    new TicketCreatedListener(stan).listen();
 
-    const subscription = stan.subscribe(
-        'ticket:created', 
-        'queue-group-name', 
-        options);
+    // old code before using the Class
 
-    subscription.on('message', (msg: Message) => {
-        const data = msg.getData();
+    // // setManualAckMode: true -> we need to manually acknowledge the message
+    // // default behaviour: if the listener crashes, the message will be lost
+    // const options = stan
+    //     .subscriptionOptions()  
+    //     .setManualAckMode(true) // we need to manually acknowledge the message
+    //     .setDeliverAllAvailable() // deliver all the events that were created in the past
+    //     .setDurableName('orders-service');  // durable subscription: if the listener crashes, the message will be saved and delivered when the listener is back online
 
-        if(typeof data === 'string') {
-            console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
-        }
+    // const subscription = stan.subscribe(
+    //     'ticket:created', 
+    //     'queue-group-name', 
+    //     options);
 
-        // acknowledge the message
-        msg.ack();
-    });
+    // subscription.on('message', (msg: Message) => {
+    //     const data = msg.getData();
+
+    //     if(typeof data === 'string') {
+    //         console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
+    //     }
+
+    //     // acknowledge the message
+    //     msg.ack();
+    // });
 });
 
 // when the process is terminated
 process.on('SIGINT', () => stan.close());
 process.on('SIGNTERM', () => stan.close());
+
+
+
+
+

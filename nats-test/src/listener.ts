@@ -19,16 +19,18 @@ stan.on('connect', () => {
         process.exit();
     });
 
-    const topic = 'ticket:created';
-    const subscriptionQueGroup = 'orders-service-queue-group';
-
     // setManualAckMode: true -> we need to manually acknowledge the message
     // default behaviour: if the listener crashes, the message will be lost
-    const options = stan.subscriptionOptions()
-        .setManualAckMode(true)
-        .setDeliverAllAvailable()
+    const options = stan
+        .subscriptionOptions()  
+        .setManualAckMode(true) // we need to manually acknowledge the message
+        .setDeliverAllAvailable() // deliver all the events that were created in the past
+        .setDurableName('orders-service');  // durable subscription: if the listener crashes, the message will be saved and delivered when the listener is back online
 
-    const subscription = stan.subscribe(topic, subscriptionQueGroup, options);
+    const subscription = stan.subscribe(
+        'ticket:created', 
+        'queue-group-name', 
+        options);
 
     subscription.on('message', (msg: Message) => {
         const data = msg.getData();

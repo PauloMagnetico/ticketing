@@ -22,31 +22,6 @@ stan.on('connect', () => {
 
     new TicketCreatedListener(stan).listen();
 
-    // old code before using the Class
-
-    // // setManualAckMode: true -> we need to manually acknowledge the message
-    // // default behaviour: if the listener crashes, the message will be lost
-    // const options = stan
-    //     .subscriptionOptions()  
-    //     .setManualAckMode(true) // we need to manually acknowledge the message
-    //     .setDeliverAllAvailable() // deliver all the events that were created in the past
-    //     .setDurableName('orders-service');  // durable subscription: if the listener crashes, the message will be saved and delivered when the listener is back online
-
-    // const subscription = stan.subscribe(
-    //     'ticket:created', 
-    //     'queue-group-name', 
-    //     options);
-
-    // subscription.on('message', (msg: Message) => {
-    //     const data = msg.getData();
-
-    //     if(typeof data === 'string') {
-    //         console.log(`Received event #${msg.getSequence()}, with data: ${data}`);
-    //     }
-
-    //     // acknowledge the message
-    //     msg.ack();
-    // });
 });
 
 // when the process is terminated

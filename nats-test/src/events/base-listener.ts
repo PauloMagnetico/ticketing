@@ -1,9 +1,17 @@
 import { Stan, Message } from 'node-nats-streaming';
+import { Subjects } from './subjects';
 
-abstract class Listener {
-    abstract subject: string;
+// get typescript to understand that the subject we provided matches 
+// up with the data property of the event
+interface Event {
+    subject: Subjects;
+    data: any;
+}
+// whenever we create a new listener, we will have to provide the type of event
+abstract class Listener<T extends Event> {
+    abstract subject: T['subject'];
     abstract queueGroupName: string; // abstract: must be defined by the child class
-    abstract onMessage(data: any, msg: Message): void;
+    abstract onMessage(data: T['data'], msg: Message): void;
     private client: Stan; //private: can't be used by the child class
     protected ackWait = 5 * 1000; // protected: can be used by the child class
 

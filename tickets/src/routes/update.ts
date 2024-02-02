@@ -7,6 +7,8 @@ import {
     NotAuthorizedError
 } from '@paulotickets/common';
 import { Ticket } from '../models/tickets';
+import { TicketCreatedPublisher } from '../events/publishers/ticket-created-publisher';
+import { natsWrapper } from '../nats-wrapper';
 
 const router = express.Router()
 
@@ -33,6 +35,15 @@ router.put('/api/tickets/:id', requireAuth, [
         price: req.body.price
     });
     await ticket.save();
+
+    // publish the event
+    new TicketCreatedPublisher(natsWrapper.client).publish({
+        id: ticket.id,
+        title: ticket.title,
+        price: ticket.price,
+        userId: ticket.userId
+    })
+
     res.send(ticket);
 });
 

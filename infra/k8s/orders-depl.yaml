@@ -17,7 +17,7 @@ spec:
           image: paulomagnetico/orders
           env:
             - name: NATS_CLIENT_ID
-              ValueFrom:
+              valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
             - name: MONGO_URI

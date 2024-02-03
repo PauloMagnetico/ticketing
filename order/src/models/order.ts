@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 import { OrderStatus } from "@paulotickets/common"
+import { TicketDoc } from "./ticket";
+
+// we want the just pass the status so we can use it from same file imports
+export { OrderStatus };
 
 interface OrderAttrs {
   userId: string;
@@ -24,11 +28,11 @@ const orderSchema = new mongoose.Schema(
     userId: {
       type: String,
       required: true,
-      enum: Object.values(OrderStatus),
     },
     status: {
       type: String,
       required: true,
+      enum: Object.values(OrderStatus)
     },
     expiresAt: {
       type: mongoose.Schema.Types.Date,

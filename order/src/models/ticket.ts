@@ -4,6 +4,7 @@ import { Order, OrderStatus } from "./order";
 // An interface that describes the properties
 // that are required to create a new Ticket
 interface TicketAttrs {
+  id: string;
   title: string;
   price: number;
 }
@@ -48,10 +49,14 @@ const ticketSchema = new mongoose.Schema(
 
 // Define a static method to create a new Ticket
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
-  return new Ticket(attrs);
-}
+  return new Ticket({
+    _id: attrs.id, //needed to set the id to the same as the one in the tickets service
+    title: attrs.title,
+    price: attrs.price
+  });
+};
 // Define a method to check if a ticket is reserved
-ticketSchema.methods.isReserved = async function() {
+ticketSchema.methods.isReserved = async function () {
   // this === the ticket document that we just called 'isReserved' on
   const existingOrder = await Order.findOne({
     ticket: this,

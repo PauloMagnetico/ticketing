@@ -35,7 +35,7 @@ build:
           - src: 'src/%%/*.ts'
             dest: .
     - image: paulomagnetico/orders
-      context: orders
+      context: order
       docker:
         dockerfile: Dockerfile
       sync:

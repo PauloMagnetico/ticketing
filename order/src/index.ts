@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { TicketCreatedListener } from "./events/listeners/ticket-created-listener";
+import { TicketUpdatedListener } from "./events/listeners/ticket-updated-listener";
 
 const start = async () => {
     if (!process.env.JWT_KEY) {
@@ -20,7 +22,7 @@ const start = async () => {
     }    
 
     try {
-        // we created the wrapper that returns ans instance
+        // we created the wrapper that returns an instance
         await natsWrapper.connect(
             process.env.NATS_CLUSTER_ID,
             process.env.NATS_CLIENT_ID,
@@ -43,6 +45,10 @@ const start = async () => {
         console.log(err);
     }
 }
+
+// we want to listen to the events
+new TicketCreatedListener(natsWrapper.client).listen();
+new TicketUpdatedListener(natsWrapper.client).listen();
 
 app.listen(3000, () => {
     console.log('listening on port 3000 motherfucker')

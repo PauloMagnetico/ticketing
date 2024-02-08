@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Order, OrderStatus } from "./order";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // An interface that describes the properties
 // that are required to create a new Ticket
@@ -14,13 +15,20 @@ interface TicketAttrs {
 export interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
+  version: number;
   isReserved(): Promise<boolean>;
 }
 
 // An interface that describes the properties
 // that a Ticket Model has
+// The build method to activate the type checking
+// The findByEvent method for concurrency control
 interface TicketModel extends mongoose.Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
+  findByEvent(event: {
+    id: string;
+    version: number;
+  }): Promise<TicketDoc | null>;
 }
 
 // Define the schema
@@ -46,6 +54,21 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
+
+// Add the versioning plugin to the schema
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
+
+// Define a method to find a ticket by event
+ticketSchema.statics.findByEvent = (event: {
+  id: string;
+  version: number
+}) => {
+  return Ticket.findOne({
+    _id: event.id,
+    version: event.version - 1
+  });
+}
 
 // Define a static method to create a new Ticket
 ticketSchema.statics.build = (attrs: TicketAttrs) => {

@@ -51,7 +51,7 @@ new TicketCreatedListener(natsWrapper.client).listen();
 new TicketUpdatedListener(natsWrapper.client).listen();
 
 app.listen(3000, () => {
-    console.log('listening on port 3000 motherfucker')
+    console.log('listening on port 3000')
 });
 
 start();

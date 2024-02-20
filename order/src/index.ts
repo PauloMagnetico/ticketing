@@ -37,6 +37,16 @@ const start = async () => {
             process.exit();
         });
 
+        // we want to define the close here (not in the wrapper)
+        // so there is no process exit all over the code
+        // in some hidden file
+        process.on('SIGINT', () => natsWrapper.client.close());
+        process.on('SIGTERM', () => natsWrapper.client.close());
+
+        // we are creating the listeners here
+        new TicketCreatedListener(natsWrapper.client).listen();
+        new TicketUpdatedListener(natsWrapper.client).listen();
+        
         // mongoose keeps track of the connection internally
         // so we can use this connection in other files
         await mongoose.connect(process.env.MONGO_URI);
@@ -45,10 +55,6 @@ const start = async () => {
         console.log(err);
     }
 }
-
-// we want to listen to the events
-new TicketCreatedListener(natsWrapper.client).listen();
-new TicketUpdatedListener(natsWrapper.client).listen();
 
 app.listen(3000, () => {
     console.log('listening on port 3000')

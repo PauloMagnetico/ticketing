@@ -4,7 +4,8 @@ import {
     validateRequest,
     NotFoundError,
     requireAuth,
-    NotAuthorizedError
+    NotAuthorizedError,
+    BadRequestError
 } from '@paulotickets/common';
 import { Ticket } from '../models/ticket';
 import { TicketCreatedPublisher } from '../events/publishers/ticket-created-publisher';
@@ -28,6 +29,10 @@ router.put('/api/tickets/:id', requireAuth, [
 
     if (ticket.userId !== req.currentUser!.id) {
         throw new NotAuthorizedError();
+    }
+
+    if (ticket.orderId) {
+        throw new BadRequestError('Cannot edit a reserved ticket');
     }
 
     ticket.set({

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { app } from "./app";
 import { natsWrapper } from "./nats-wrapper";
+import { OrderCancelledListener } from "./events/listeners/order-cancelled-listener";   
+import { OrderCreatedListener } from "./events/listeners/order-created-listener";   
 
 const start = async () => {
     if (!process.env.JWT_KEY) {
@@ -34,6 +36,15 @@ const start = async () => {
             console.log('NATS connection closed');
             process.exit();
         });
+        // we want to define the close here (not in the wrapper)
+        // so there is no process exit all over the code
+        // in some hidden file
+        process.on('SIGINT', () => natsWrapper.client.close());
+        process.on('SIGTERM', () => natsWrapper.client.close());
+
+        // we are creating the listeners here
+        new OrderCreatedListener(natsWrapper.client).listen();
+        new OrderCancelledListener(natsWrapper.client).listen();
 
         // mongoose keeps track of the connection internally
         // so we can use this connection in other files

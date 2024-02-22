@@ -35,23 +35,23 @@ build:
           - src: 'src/%%/*.ts'
             dest: .
     - image: paulomagnetico/orders
-      context: order
+      context: orders
       docker:
         dockerfile: Dockerfile
       sync:
         manual:
           - src: 'src/%%/*.ts'
             dest: .
-    - image: paulomagnetico/expiration
-      context: expiration
+    - image: paulomagnetico/expirations
+      context: expirations
       docker:
         dockerfile: Dockerfile
       sync:
         manual:
           - src: 'src/%%/*.ts'
             dest: .
-    - image: paulomagnetico/payment
-      context: payment
+    - image: paulomagnetico/payments
+      context: payments
       docker:
         dockerfile: Dockerfile
       sync:

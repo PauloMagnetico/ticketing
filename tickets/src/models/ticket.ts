@@ -45,7 +45,7 @@ const ticketSchema = new mongoose.Schema({
 });
 
 // we are using the version field instead of __v
-ticketSchema.set('versionKey', 'version');
+ticketSchema.set("versionKey", "version");
 ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {

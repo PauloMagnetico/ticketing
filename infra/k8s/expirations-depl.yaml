@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: expiration-depl
+  name: expirations-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: expiration
+      app: expirations
   template:
     metadata:
       labels:
-        app: expiration
+        app: expirations
     spec:
       containers:
-        - name: expiration
-          image: paulomagnetico/expiration
+        - name: expirations
+          image: paulomagnetico/expirations
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
@@ -25,5 +25,5 @@ spec:
             - name: NATS_CLUSTER_ID
               value: 'ticketing'
             - name: REDIS_HOST
-              value: 'expiration-redis-srv'
+              value: 'expirations-redis-srv'
 # no need for clustter IP, we don't need to access it from outside

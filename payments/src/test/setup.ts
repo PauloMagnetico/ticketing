@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 
 declare global {
-    var signin: () => string[];
+    var signin: (id?: string) => string[];
 }
 
 // we mock the nats-wrapper to avoid making a connection to the nats server
@@ -38,12 +38,14 @@ afterAll(async () => {
 
 // we cannot use a signin like in the auth service, because we don't have a signin route
 // testing should only contain the current service , and thus not make a call to auth
-global.signin = () => {
+global.signin = (id?: string) => {
 
     // build a JWT payload { id, email }
     // we create a random id to simulate different logins every time
     const payload = {
-        id: new mongoose.Types.ObjectId().toHexString(),
+        // we provide optinal id, if none we create a new one
+        // this way we can test for a specific user
+        id: id || new mongoose.Types.ObjectId().toHexString(),
         email: 'test@test.com'
     };
 

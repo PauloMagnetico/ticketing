@@ -10,6 +10,7 @@ import {
 } from '@paulotickets/common';
 import { Order } from '../models/order';
 import { stripe } from '../stripe';
+import { Payment } from '../models/payment';
 
 const router = express.Router();
 
@@ -35,11 +36,22 @@ router.post('/api/payments', requireAuth, [
         throw new BadRequestError('Cannot pay for an cancelled order');
     }
 
-    await stripe.charges.create({
+    //check strip documentation for the response obejct, we need the charge id
+    const charge = await stripe.charges.create({
         currency: 'usd',
         amount: order.price * 100,
         source: token
     });
+
+    // create a payment record in our DB
+    // we can use the Id for further queries to stripe if needed
+    const payment = Payment.build({
+        orderId,
+        stripeId: charge.id
+    });
+    await payment.save();
+
+    res.status(201).send({ success: true });
 });
 
 export { router as createChargeRouter };

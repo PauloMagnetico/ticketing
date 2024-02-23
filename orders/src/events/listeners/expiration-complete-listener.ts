@@ -15,6 +15,10 @@ export class ExpirationCompleteListener extends Listener<ExpirationCompleteEvent
         if (!order) {
             throw new Error("Order not found");
         }
+        // if the order is already complete, we do not want to cancel it
+        if (order.status === OrderStatus.Complete) {
+            return msg.ack();
+        }
         
         // we do not have to update the ticket to null,
         // because of the isRserved function we defined in the ticket model
